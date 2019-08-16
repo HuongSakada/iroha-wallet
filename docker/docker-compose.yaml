@@ -1,0 +1,54 @@
+version: '3.5'
+
+networks:
+  iroha-wallet-network:
+    name: iroha-wallet-network
+    attachable: true
+
+services:
+  iroha-wallet:
+    image: hyperledger/iroha:latest
+    container_name: iroha-wallet
+    depends_on:
+      - iroha-wallet-postgres
+    tty: true
+    environment:
+      - KEY=keys/node0
+    entrypoint:
+      - /opt/iroha_data/entrypoint.sh
+    networks:
+      - iroha-wallet-network
+    volumes:
+      - ./iroha:/opt/iroha_data
+    logging:
+      driver: none
+    ports:
+      - 50051:50051
+
+  iroha-wallet-postgres:
+    image: postgres:9.5
+    container_name: iroha-wallet-postgres
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    networks:
+      - iroha-wallet-network
+    logging:
+      driver: none
+
+  grpcwebproxy:
+    build:
+      context: grpcwebproxy/
+    container_name: iroha-wallet-grpcwebproxy
+    depends_on:
+      - iroha-wallet
+    entrypoint:
+      - grpcwebproxy
+      - --backend_addr=iroha-wallet:50051
+      - --run_tls_server=false
+      - --allow_all_origins=true
+    networks:
+      - iroha-wallet-network
+    logging:
+      driver: none
+    ports:
+      - 8081:8080

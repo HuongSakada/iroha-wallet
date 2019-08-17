@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { isLoggedIn } from '@utils/functions'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,16 @@ const router = new VueRouter({
       redirect: '/'
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name === 'login' || to.name === 'signup') return next()
+
+  if (isLoggedIn()) {
+    next()
+  } else {
+    next({ name: 'login' })
+  }
 })
 
 export default router;

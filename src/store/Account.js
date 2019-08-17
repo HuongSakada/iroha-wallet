@@ -4,6 +4,7 @@ import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
 import { cache, newQueryServiceOptions} from '@/utils/util'
+import { transactionAssetForm } from '@utils/transaction-format'
 
 const types = _([
   'SIGNUP',
@@ -40,7 +41,13 @@ function handleError (state, error) {
 const state = initialState()
 
 const getters = {
+  getAccountTransactions (state) {
+    let transactions = _.cloneDeep(state.assetTransactions)
+    let txs = Object.values(transactions)
+      .map(a => a.transactionsList)
 
+    return transactionAssetForm(txs, state.accountId)
+  }
 }
 
 const mutations = {
@@ -50,6 +57,9 @@ const mutations = {
     Object.keys(s).forEach(key => {
       state[key] = s[key]
     })
+
+    cache.username = null
+    cache.key = null
   },
 
   [types.SIGNUP_REQUEST] (state) {},
@@ -81,13 +91,17 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_ASSETS_REQUEST] (state) {},
-  [types.GET_ACCOUNT_ASSETS_SUCCESS] (state, params) {},
+  [types.GET_ACCOUNT_ASSETS_SUCCESS] (state, assets) { 
+    state.assets = assets 
+  },
   [types.GET_ACCOUNT_ASSETS_FAILURE] (state, err) {
     handleError(state, err)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
-  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, params) {},
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
+    Vue.set(state.assetTransactions, assetId, transactions)
+  },
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
   },
@@ -112,6 +126,69 @@ const actions = {
       commit(types.LOGIN_FAILURE, err)
     })
   },
+
+  logout ({ commit }) {
+    commit(types.RESET)
+  },
+
+  getAllAccountAssetsTransactions ({ dispatch, state }) {
+
+    let gettingAccountAssets
+
+    if (_.isEmpty(state.assets)) {
+      gettingAccountAssets = dispatch('getAccountAssets')
+    } else {
+      gettingAccountAssets = Promise.resolve()
+    }
+
+    return gettingAccountAssets
+      .then(() => {
+        const gettingAllAccountAssetsTransactions = state.assets.map(a => {
+          return dispatch('getAccountAssetTransactions', { assetId: a.assetId })
+        })
+
+        return Promise.all(gettingAllAccountAssetsTransactions)
+      })
+      .catch(err => {
+        throw err
+      })
+  },
+
+  getAccountAssets ({ commit, state }) {
+    return queries.getAccountAssets(
+      newQueryServiceOptions(),
+      {
+        accountId: state.accountId
+      })
+      .then(assets => {
+        commit(types.GET_ACCOUNT_ASSETS_SUCCESS, assets)
+      })
+      .catch(err => {
+        commit(types.GET_ACCOUNT_ASSETS_FAILURE, err)
+    })
+  },
+
+  getAccountAssetTransactions ({ commit, state }, { assetId }) {
+    commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST)
+
+    return queries.getAccountAssetTransactions(
+      newQueryServiceOptions(),
+      {
+        accountId: state.accountId,
+        assetId,
+        pageSize: 100,
+        firstTxHash: undefined
+      })
+      .then(responses => {
+        commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS, {
+          assetId: assetId,
+          transactions: responses
+        })
+      })
+      .catch(err => {
+        commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE, err)
+      })
+  }
 }
 
 export default {

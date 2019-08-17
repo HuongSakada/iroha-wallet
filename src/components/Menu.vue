@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Menu',
   computed: {
@@ -64,8 +66,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'logout'
+    ]),
     onLogout () {
-
+      this.logout()
+        .then(() => this.$router.push('/login'))
     }
   }
 }

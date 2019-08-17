@@ -45,6 +45,10 @@ export default {
 .el-card {
   height: 130px;
 }
+.el-card:hover {
+  box-shadow: 5px 5px 10px 0px rgba(0,0,0,0.5);
+  transform: translateY(1px);
+}
 .wallet-logo {
   height: 130px;
   font-size: 7em;
@@ -54,8 +58,8 @@ export default {
   background: transparent;
 }
 .wallet-info {
-  padding: 25px;
-  padding-right: 45px;
+  padding: 28px;
+  padding-right: 32px !important;
   height: 130px;
   text-align: right;
   background: transparent;

@@ -27,10 +27,8 @@
             </el-table-column>
             <el-table-column prop="amount" label="Amount">
                 <template slot-scope="scope">
-                    <span
-                        :class="[scope.row.from === 'you' ? 'withdraw amount' : 'deposit amount']"
-                    >
-                        {{ scope.row.from === 'you' ? '−' : '' }} {{ scope.row.amount }}
+                    <span class="amount">
+                        {{ scope.row.from === 'you' ? '−' : '+' }}{{ scope.row.amount }}
                     </span>
                 </template>
             </el-table-column>

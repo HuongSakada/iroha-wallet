@@ -10,7 +10,13 @@
             :span="17"
             class="wallet-info">
             <div class="wallet-title">{{ title }}</div>
-            <div class="wallet-amount">{{ isRiel?amount+'៛':'$'+amount }}</div>
+            <div class="wallet-amount">
+              <el-tooltip 
+                :content="isRiel?amount+'៛':'$'+amount" 
+                placement="top">
+                <h4 style="overflow: hidden;text-overflow: ellipsis;padding:0px;margin:0px">{{ isRiel?amount+'៛':'$'+amount }}</h4>
+              </el-tooltip>
+            </div>
         </el-col>
     </el-card>
 </template>
@@ -29,11 +35,14 @@ export default {
     },
     amount: {
       type: String,
-      required: true
+      required: true,
+      default () {
+        return ''
+      }
     },
     backgroundColor: {
         type: String,
-        default() {
+        default () {
             return '#ff9800';
         }
     }

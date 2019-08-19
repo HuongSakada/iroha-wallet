@@ -47,6 +47,24 @@ const getters = {
       .map(a => a.transactionsList)
 
     return transactionAssetForm(txs, state.accountId)
+  },
+
+  wallets (state) {
+    const assets = state.assets.map(a => {
+      const assetParts = a.assetId.split('#')
+      const assetName = assetParts[0].toLowerCase()
+
+      return {
+        id: a.assetId.replace(/#/g, '$'),
+        assetId: a.assetId,
+        name: _.upperFirst(assetName),
+        domain: assetParts[1].toLowerCase(),
+        amount: a.balance,
+        precision: a.balance.precision
+      }
+    })
+
+    return assets
   }
 }
 

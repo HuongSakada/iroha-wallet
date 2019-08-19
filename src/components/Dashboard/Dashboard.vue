@@ -5,13 +5,13 @@
         <el-col :span="12">
           <wallet-card 
             title="Riel account"
-            amount="100000"/>
+            :amount="riel.amount"/>
         </el-col>
         <el-col :span="12" >
           <wallet-card 
             :isRiel="false"
             title="Dollar account"
-            amount="10000"
+            :amount="usd.amount"
             background-color="#e43e33"/>
         </el-col>
       </el-row>
@@ -37,8 +37,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      accountTransactions: 'getAccountTransactions'
-    })
+      accountTransactions: 'getAccountTransactions',
+      wallets: 'wallets'
+    }),
+    riel () {
+      return this.wallets.find(a => (a.id === 'augur$d3')) || {}
+    },
+    usd () {
+      return this.wallets.find(a => (a.id === 'xor$sora')) || {}
+    }
   },
   created () {
     this.getAllAccountAssetsTransactions()

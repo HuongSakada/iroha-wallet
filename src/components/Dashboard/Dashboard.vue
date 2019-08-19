@@ -3,16 +3,21 @@
     <el-main>
       <el-row :gutter="17" style="margin-bottom: 1.25rem">
         <el-col :span="12">
-          <wallet-card 
-            title="Riel account"
-            :amount="riel.amount"/>
+          <router-link
+            :to="'/wallets/' + riel.id">
+            <wallet-card 
+              title="Riel account"
+              :amount="riel.amount"/>
+          </router-link>
         </el-col>
         <el-col :span="12" >
+          <router-link
+            :to="'/wallets/' + usd.id">
           <wallet-card 
             :isRiel="false"
             title="Dollar account"
-            :amount="usd.amount"
-            background-color="#e43e33"/>
+            :amount="usd.amount"/>
+          </router-link>
         </el-col>
       </el-row>
 
@@ -41,10 +46,10 @@ export default {
       wallets: 'wallets'
     }),
     riel () {
-      return this.wallets.find(a => (a.id === 'augur$d3')) || {}
+      return this.wallets.find(a => (a.id === 'golem$d3')) || {}
     },
     usd () {
-      return this.wallets.find(a => (a.id === 'xor$sora')) || {}
+      return this.wallets.find(a => (a.id === 'augur$d3')) || {}
     }
   },
   created () {

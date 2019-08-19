@@ -49,6 +49,12 @@ const getters = {
     return transactionAssetForm(txs, state.accountId)
   },
 
+  getTransactionByAssetId: (state) => (assetId) => {
+    let transactions = _.cloneDeep(state.assetTransactions)
+
+    return transactionAssetForm(transactions[assetId].transactionsList, state.accountId)
+  },
+
   wallets (state) {
     const assets = state.assets.map(a => {
       const assetParts = a.assetId.split('#')

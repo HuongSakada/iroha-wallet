@@ -26,7 +26,14 @@ const router = new VueRouter({
         {
           path: 'wallets',
           name: 'wallets',
-          component: lazyComponent('Wallets/WalletPage')
+          component: lazyComponent('Wallets/WalletPage'),
+          children: [
+            {
+              path: ':walletId',
+              name: 'wallet',
+              component: lazyComponent('Wallets/Wallet')
+            }
+          ]
         }
       ]
     },

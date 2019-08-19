@@ -2,7 +2,7 @@
     <el-card
         :body-style="{ padding: '0px' }"
         class="el-card"
-        v-bind:style="{background: backgroundColor}">
+        v-bind:style="{background: isRiel?'#e43e33':'#ff9800'}">
         <el-col
             :span="7"
             class="wallet-logo">{{isRiel?'៛':'$'}}</el-col>
@@ -39,12 +39,6 @@ export default {
       default () {
         return ''
       }
-    },
-    backgroundColor: {
-        type: String,
-        default () {
-            return '#ff9800';
-        }
     }
   }
 }

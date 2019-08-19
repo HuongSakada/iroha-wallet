@@ -89,7 +89,7 @@ export default {
   overflow-x: hidden;
   z-index: 100;
   position: fixed !important;
-  border-right: none !important;
+  border-right: 1px solid #e43e33 !important;
 }
 .el-side-menu:not(.el-menu--collapse) {
   width: 200px;
@@ -101,7 +101,7 @@ export default {
 .el-menu-item:hover {
   background: #e43f338c;
 }
- .el-menu-item.is-active{
+.el-menu-item.is-active, .el-menu-item.is-active i {
   background: #e43e33;
   color: rgb(255, 255, 255, 1);
 }

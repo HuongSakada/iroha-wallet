@@ -12,7 +12,8 @@ const types = _([
   'LOGOUT',
   'GET_ACCOUNT',
   'GET_ACCOUNT_ASSETS',
-  'GET_ACCOUNT_ASSET_TRANSACTIONS'
+  'GET_ACCOUNT_ASSET_TRANSACTIONS',
+  'TRANSFER_ASSET'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -71,6 +72,10 @@ const getters = {
     })
 
     return assets
+  },
+
+  accountQuorum (state) {
+    return state.accountQuorum
   }
 }
 
@@ -129,6 +134,12 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
   },
+
+  [types.TRANSFER_ASSET_REQUEST] (state) {},
+  [types.TRANSFER_ASSET_SUCCESS] (state) {},
+  [types.TRANSFER_ASSET_FAILURE] (state, err) {
+    handleError(state, err)
+  }
 }
 
 const actions = {
@@ -211,6 +222,23 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE, err)
+      })
+  },
+
+  transferAsset ({state, getters}, { assetId, to, description = '', amount }) {
+    commit(types.TRANSFER_ASSET_REQUEST)
+
+    return commands.transferAsset(
+      newCommandServiceOptions(cache.key, getters.accountQuorum), 
+      {
+        srcAccountId: state.accountId,
+        destAccountId: to,
+        assetId,
+        description,
+        amount
+      })
+      .catch(err => {
+        commit(types.TRANSFER_ASSET_FAILURE, err)
       })
   }
 }

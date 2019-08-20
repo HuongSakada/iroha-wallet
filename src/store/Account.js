@@ -3,7 +3,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
-import { cache, newQueryServiceOptions} from '@/utils/util'
+import { cache, newQueryServiceOptions, newCommandServiceOptions} from '@/utils/util'
 import { transactionAssetForm } from '@utils/transaction-format'
 
 const types = _([
@@ -225,11 +225,11 @@ const actions = {
       })
   },
 
-  transferAsset ({state, getters}, { assetId, to, description = '', amount }) {
+  transferAsset ({commit, state, getters}, { assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return commands.transferAsset(
-      newCommandServiceOptions(cache.key, getters.accountQuorum), 
+      newCommandServiceOptions([cache.key], getters.accountQuorum), 
       {
         srcAccountId: state.accountId,
         destAccountId: to,

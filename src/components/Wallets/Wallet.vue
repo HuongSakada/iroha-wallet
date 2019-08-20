@@ -146,7 +146,7 @@ export default {
                 if(valid){
                     this.isSending = true
                     this.$store.dispatch('transferAsset', {
-                        assetId: this.walletId,
+                        assetId: this.wallet.assetId,
                         to: this.transferForm.to,
                         amount: String(this.transferForm.amount),
                         description: this.transferForm.message
@@ -164,7 +164,7 @@ export default {
                     })
                     .finally(() => { 
                         this.isSending = false 
-                        transferFormVisible = false
+                        this.transferFormVisible = false
                     })
                 }
                 else {

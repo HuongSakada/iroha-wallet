@@ -4,19 +4,19 @@
       <el-row :gutter="17" style="margin-bottom: 1.25rem">
         <el-col :span="12">
           <router-link
-            :to="'/wallets/' + riel.id">
+            :to="'/wallets/' + rielAccount.id">
             <wallet-card 
               title="Riel account"
-              :amount="riel.amount"/>
+              :amount="rielAccount.amount"/>
           </router-link>
         </el-col>
         <el-col :span="12" >
           <router-link
-            :to="'/wallets/' + usd.id">
+            :to="'/wallets/' + usdAccount.id">
           <wallet-card 
             :isRiel="false"
             title="Dollar account"
-            :amount="usd.amount"/>
+            :amount="usdAccount.amount"/>
           </router-link>
         </el-col>
       </el-row>
@@ -43,14 +43,10 @@ export default {
   computed: {
     ...mapGetters({
       accountTransactions: 'getAccountTransactions',
-      wallets: 'wallets'
-    }),
-    riel () {
-      return this.wallets.find(a => (a.id === 'golem$d3')) || {}
-    },
-    usd () {
-      return this.wallets.find(a => (a.id === 'augur$d3')) || {}
-    }
+      wallets: 'wallets',
+      rielAccount: 'rielAccount',
+      usdAccount: 'usdAccount'
+    })
   },
   created () {
     this.getAllAccountAssetsTransactions()

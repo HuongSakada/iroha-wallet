@@ -1,8 +1,8 @@
 <template>
   <el-row>
     <el-col :span="4" style="margin-top: 20px">
-      <wallet-item :wallet="wallets[0]" />
-      <wallet-item :wallet="wallets[1]" :isRiel="false"/>
+      <wallet-item :wallet="rielAccount" />
+      <wallet-item :wallet="usdAccount" :isRiel="false"/>
     </el-col>
     <el-col :span="20">
         <router-view />
@@ -22,7 +22,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      wallets: 'wallets'
+      wallets: 'wallets',
+      rielAccount: 'rielAccount',
+      usdAccount: 'usdAccount'
     })
   },
   watch: {

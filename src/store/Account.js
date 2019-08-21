@@ -74,6 +74,14 @@ const getters = {
     return assets
   },
 
+  rielAccount: (state, getters) => {
+    return getters.wallets.find(w => (w.id === 'golem$d3')) || {}
+  },
+
+  usdAccount: (state, getters) => {
+    return getters.wallets.find(w => (w.id === 'augur$d3')) || {}
+  },
+
   accountQuorum (state) {
     return state.accountQuorum
   }
@@ -225,11 +233,11 @@ const actions = {
       })
   },
 
-  transferAsset ({commit, state, getters}, { assetId, to, description = '', amount }) {
+  transferAsset ({commit, state, getters}, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return commands.transferAsset(
-      newCommandServiceOptions([cache.key], getters.accountQuorum), 
+      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
       {
         srcAccountId: state.accountId,
         destAccountId: to,

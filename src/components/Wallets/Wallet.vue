@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 
 export default {
@@ -141,30 +141,39 @@ export default {
         }
     },
     methods: {
+        ...mapActions([
+            'openConfirmDialog',
+        ]),
         onTransfer () {
             this.$refs['transferForm'].validate((valid) => {
                 if(valid){
-                    this.isSending = true
-                    this.$store.dispatch('transferAsset', {
-                        assetId: this.wallet.assetId,
-                        to: this.transferForm.to,
-                        amount: String(this.transferForm.amount),
-                        description: this.transferForm.message
-                    })
-                    .then(() => {
-                        this.$message({
-                            message: 'Transfer successful!',
-                            type: 'success'
+                    this.openConfirmDialog()
+                    .then(privateKeys => {
+                        if (!privateKeys) return
+                        this.isSending = true
+
+                        this.$store.dispatch('transferAsset', {
+                            privateKeys,
+                            assetId: this.wallet.assetId,
+                            to: this.transferForm.to,
+                            amount: String(this.transferForm.amount),
+                            description: this.transferForm.message
                         })
-                    })
-                    .catch(err => {
-                        this.$alert(err.message, 'Transfer error', {
-                            type: 'error'
+                        .then(() => {
+                            this.$message({
+                                message: 'Transfer successful!',
+                                type: 'success'
+                            })
                         })
-                    })
-                    .finally(() => { 
-                        this.isSending = false 
-                        this.transferFormVisible = false
+                        .catch(err => {
+                            this.$alert(err.message, 'Transfer error', {
+                                type: 'error'
+                            })
+                        })
+                        .finally(() => { 
+                            this.isSending = false 
+                            this.transferFormVisible = false
+                        })
                     })
                 }
                 else {

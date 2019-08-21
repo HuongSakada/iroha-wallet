@@ -4,6 +4,11 @@ function isLoggedIn () {
   return !!cache.username
 }
 
+function predefinedPrivateKey () {
+  return 'key'
+}
+
 export {
-  isLoggedIn
+  isLoggedIn,
+  predefinedPrivateKey
 }

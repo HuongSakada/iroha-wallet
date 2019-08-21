@@ -3,6 +3,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
+import { cryptoHelper } from 'iroha-helpers'
 import { cache, newQueryServiceOptions, newCommandServiceOptions} from '@/utils/util'
 import { transactionAssetForm } from '@utils/transaction-format'
 
@@ -248,6 +249,32 @@ const actions = {
       .catch(err => {
         commit(types.TRANSFER_ASSET_FAILURE, err)
       })
+  },
+
+  createAccount ({ state }, { accountName, domainId }) {
+
+    let { publicKey, privateKey } = cryptoHelper.generateKeyPair()
+
+    if(!_.isEmpty(accountName.trim())){
+      return new Promise((resolve, reject) => {
+        resolve(privateKey)
+        return commands.createAccount(
+          newCommandServiceOptions(privateKeys, getters.accountQuorum),
+          {
+            accountName: accountName,
+            domainId: domainId,
+            publicKey: publicKey
+          }
+        )
+        .then(() => {
+          resolve(privateKey)
+        })
+        .catch(err => { reject(err) })
+      })
+      .catch(err => {
+        throw err
+      })
+    }
   }
 }
 

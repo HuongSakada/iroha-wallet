@@ -91,7 +91,7 @@ export default {
     return {
       isLoading: false,
       dialogVisible: false,
-      predefinedDomain: 'd3',
+      predefinedDomain: 'iroha',
       form: {
         username: '',
         firstname: '',
@@ -133,6 +133,12 @@ export default {
             this.$store.dispatch('setAccountDetails', {
               accountId: `${this.userAccount.username}@${this.predefinedDomain}`,
               accountInfo: omit(accountInfo, ['username'])
+            })
+            .catch( err => { throw err })
+          })
+          .then(() => {
+            this.$store.dispatch('initialAssetQuantityForUser', {
+              accountId: `${this.userAccount.username}@${this.predefinedDomain}`
             })
             .catch( err => { throw err })
           })

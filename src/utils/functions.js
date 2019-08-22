@@ -1,8 +1,9 @@
-import { cache } from './util'
+import { cache, newPreCommandServiceOptions } from './util'
+import commands from 'iroha-helpers/lib/commands'
 import fs from 'fs'
 import path from 'path'
 
-const accountId = 'test@d3'
+const accountId = 'admin@iroha'
 
 function isLoggedIn () {
   return !!cache.username
@@ -12,15 +13,42 @@ function preDefinedPrivateKey () {
   let preAccountId = '../../docker/iroha/keys/admin@iroha.priv'
   let privateKey = fs.readFileSync(path.join(__dirname, preAccountId)).toString().trim()
   return [privateKey]
-  return ['0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33', '9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1']
 }
 
 function preDefinedAccountId () {
   return accountId
 }
 
+async function preInitialAssetQuantityForUser ({ accountId }) {
+  const  assetId = 'riel$iroha'
+
+  try {
+    await commands.addAssetQuantity(
+      newPreCommandServiceOptions(),
+      {
+        assetId: assetId,
+        amount: '100'
+      }
+    )
+
+    await commands.transferAsset(
+      newPreCommandServiceOptions(),
+      {
+        srcAccountId: preDefinedAccountId(),
+        destAccountId: accountId,
+        assetId: assetId,
+        description: '',
+        amount: '100'
+      }
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
 export {
   isLoggedIn,
   preDefinedPrivateKey,
-  preDefinedAccountId
+  preDefinedAccountId,
+  preInitialAssetQuantityForUser
 }

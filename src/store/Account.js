@@ -6,6 +6,7 @@ import queries from 'iroha-helpers/lib/queries'
 import { cryptoHelper } from 'iroha-helpers'
 import { cache, newQueryServiceOptions, newCommandServiceOptions, newPreCommandServiceOptions } from '@/utils/util'
 import { transactionAssetForm } from '@/utils/transaction-format'
+import { preInitialAssetQuantityForUser } from '@/utils/functions'
 
 const types = _([
   'SIGNUP',
@@ -14,7 +15,8 @@ const types = _([
   'GET_ACCOUNT',
   'GET_ACCOUNT_ASSETS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
-  'TRANSFER_ASSET'
+  'TRANSFER_ASSET',
+  'ADD_ASSET_QUANTITY'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -147,6 +149,12 @@ const mutations = {
   [types.TRANSFER_ASSET_REQUEST] (state) {},
   [types.TRANSFER_ASSET_SUCCESS] (state) {},
   [types.TRANSFER_ASSET_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.ADD_ASSET_QUANTITY_REQUEST] (state) {},
+  [types.ADD_ASSET_QUANTITY_SUCCESS] (state) {},
+  [types.ADD_ASSET_QUANTITY_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -292,6 +300,10 @@ const actions = {
     });
 
     return Promise.all(setAccountDetailArray)
+  },
+
+  initialAssetQuantityForUser ({ state }, { accountId }) {
+    preInitialAssetQuantityForUser({ accountId })
   }
 }
 

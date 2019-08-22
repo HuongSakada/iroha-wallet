@@ -80,13 +80,13 @@
 </template>
 
 <script>
+/* eslint-disable */
 import { mapActions } from 'vuex'
 import { saveAs } from 'file-saver'
-/* eslint-disable */
+import { omit, cloneDeep } from 'lodash'
 
 export default {
   name: 'Signup',
-
   data () {
     return {
       isLoading: false,
@@ -115,7 +115,6 @@ export default {
       }
     }
   },
-
   methods: {
     onSubmit () {
       this.$refs['form'].validate((valid) => {
@@ -128,6 +127,16 @@ export default {
           .then((privateKey) => {
             this.userAccount.username = this.form.username.trim()
             this.userAccount.privateKey = privateKey
+
+            let accountInfo = cloneDeep(this.form)
+            
+            this.$store.dispatch('setAccountDetails', {
+              accountId: `${this.userAccount.username}@${this.predefinedDomain}`,
+              accountInfo: omit(accountInfo, ['username'])
+            })
+            .catch( err => { throw err })
+          })
+          .then(() => {
             this.dialogVisible = true
           })
           .catch(err => {
@@ -143,7 +152,6 @@ export default {
         }
       });
     },
-
     onDownloadPrivateKey () {
       const filename = `${this.userAccount.username}@${this.predefinedDomain}.priv`
       const blob = new Blob(

@@ -4,8 +4,8 @@ import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
 import { cryptoHelper } from 'iroha-helpers'
-import { cache, newQueryServiceOptions, newCommandServiceOptions} from '@/utils/util'
-import { transactionAssetForm } from '@utils/transaction-format'
+import { cache, newQueryServiceOptions, newCommandServiceOptions, newPreCommandServiceOptions } from '@/utils/util'
+import { transactionAssetForm } from '@/utils/transaction-format'
 
 const types = _([
   'SIGNUP',
@@ -76,11 +76,11 @@ const getters = {
   },
 
   rielAccount: (state, getters) => {
-    return getters.wallets.find(w => (w.id === 'golem$d3')) || {}
+    return getters.wallets.find(w => (w.id === 'riel$iroha')) || {}
   },
 
   usdAccount: (state, getters) => {
-    return getters.wallets.find(w => (w.id === 'augur$d3')) || {}
+    return getters.wallets.find(w => (w.id === 'usd$iroha')) || {}
   },
 
   accountQuorum (state) {
@@ -234,7 +234,7 @@ const actions = {
       })
   },
 
-  transferAsset ({commit, state, getters}, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return commands.transferAsset(
@@ -251,15 +251,14 @@ const actions = {
       })
   },
 
-  createAccount ({ state }, { accountName, domainId }) {
+  createAccount ({ commit }, { accountName, domainId }) {
 
     let { publicKey, privateKey } = cryptoHelper.generateKeyPair()
 
     if(!_.isEmpty(accountName.trim())){
       return new Promise((resolve, reject) => {
-        resolve(privateKey)
         return commands.createAccount(
-          newCommandServiceOptions(privateKeys, getters.accountQuorum),
+          newPreCommandServiceOptions(),
           {
             accountName: accountName,
             domainId: domainId,
@@ -272,9 +271,27 @@ const actions = {
         .catch(err => { reject(err) })
       })
       .catch(err => {
-        throw err
+        commit(types.SIGNUP_FAILURE, err)
       })
     }
+  },
+
+  setAccountDetails ({ state }, { accountId = state.accountId, accountInfo }) {
+    const setAccountDetailArray = _.flatMap(accountInfo, function(value, key) {
+      return commands.setAccountDetail(
+        newPreCommandServiceOptions(), 
+        {
+          accountId: accountId,
+          key: key,
+          value: value
+        }
+      )
+      .catch(err => {
+        throw err
+      })
+    });
+
+    return Promise.all(setAccountDetailArray)
   }
 }
 

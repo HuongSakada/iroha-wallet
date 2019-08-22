@@ -100,7 +100,7 @@ export default {
             return this.wallets.find(w => (w.id === this.walletId)) || {}
         },
         isRiel () {
-            return this.walletId === 'golem$d3' ? true:false
+            return this.walletId === 'riel$iroha' ? true:false
         },
         transactions () {
             return this.getTransactionByAssetId(this.wallet.assetId)

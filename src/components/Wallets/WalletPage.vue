@@ -13,7 +13,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
-import { isUndefined, isNull } from 'util';
 
 export default {
   name: 'WalletPage',

@@ -303,7 +303,15 @@ const actions = {
   },
 
   initialAssetQuantityForUser ({ state }, { accountId }) {
-    preInitialAssetQuantityForUser({ accountId })
+    preInitialAssetQuantityForUser({ 
+      assetId: "riel#iroha", 
+      accountId 
+    })
+
+    preInitialAssetQuantityForUser({ 
+      assetId: "usd#iroha", 
+      accountId 
+    })
   }
 }
 

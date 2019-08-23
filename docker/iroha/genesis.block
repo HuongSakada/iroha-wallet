@@ -37,38 +37,34 @@
                                  "can_read_assets",
                                  "can_remove_signatory",
                                  "can_set_quorum",
-                                 "can_set_detail"
+                                 "can_set_detail",
+                                 "can_add_asset_qty"
                               ]
                            }
                         },
                         {
                            "createRole": {
-                              "roleName": "user",
+                              "roleName": "client",
                               "permissions": [
-                                 "can_add_signatory",
+                                 "can_get_my_account",
                                  "can_get_my_acc_ast",
                                  "can_get_my_acc_ast_txs",
-                                 "can_get_my_acc_detail",
                                  "can_get_my_acc_txs",
-                                 "can_get_my_account",
-                                 "can_get_my_signatories",
                                  "can_get_my_txs",
-                                 "can_grant_can_add_my_signatory",
-                                 "can_grant_can_remove_my_signatory",
-                                 "can_grant_can_set_my_account_detail",
-                                 "can_grant_can_set_my_quorum",
-                                 "can_grant_can_transfer_my_assets",
-                                 "can_remove_signatory",
-                                 "can_set_quorum",
+                                 "can_get_all_accounts",
                                  "can_transfer",
-                                 "can_receive"
+                                 "can_receive",
+                                 "can_set_quorum",
+                                 "can_add_signatory",
+                                 "can_get_my_signatories",
+                                 "can_remove_signatory"
                               ]
                            }
                         },
                         {
                            "createDomain": {
                               "domainId": "iroha",
-                              "defaultRole": "user"
+                              "defaultRole": "client"
                            }
                         },
                         {
@@ -82,6 +78,20 @@
                            "appendRole": {
                               "accountId": "admin@iroha",
                               "roleName": "admin"
+                           }
+                        },
+                        {
+                           "createAsset": {
+                              "assetName": "riel",
+                              "domainId": "iroha",
+                              "precision": 10
+                           }
+                        },
+                        {
+                           "createAsset": {
+                              "assetName": "usd",
+                              "domainId": "iroha",
+                              "precision": 10
                            }
                         }
                      ],

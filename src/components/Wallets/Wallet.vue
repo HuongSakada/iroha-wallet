@@ -82,6 +82,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
+import _ from 'lodash'
 
 export default {
     name: 'Wallet',

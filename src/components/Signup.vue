@@ -91,6 +91,7 @@ export default {
     return {
       isLoading: false,
       dialogVisible: false,
+      alertVisible: false,
       predefinedDomain: 'iroha',
       form: {
         username: '',
@@ -151,7 +152,15 @@ export default {
               type: 'error'
             })
           })
-          .finally(() => { this.isLoading = false })
+          .finally(() => { 
+            this.$notify.success({
+              title: 'Create account successfully',
+              message: 'You have 100៛ and $100 in your account.',
+              offset: 100
+            })
+
+            this.isLoading = false 
+          })
         }
         else{
           return false

@@ -29,6 +29,7 @@
 
         <el-dialog
             title="Transfer"
+            :close-on-click-modal="false"
             :visible.sync="transferFormVisible"
             @close="closeTransferForm"
             width="450px"

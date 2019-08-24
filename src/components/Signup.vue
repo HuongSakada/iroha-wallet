@@ -62,6 +62,7 @@
 
   <el-dialog
     title="Your private key"
+    :close-on-click-modal="false"
     :visible.sync="dialogVisible"
     width="450px"
     center>
@@ -145,6 +146,11 @@ export default {
           })
           .then(() => {
             this.dialogVisible = true
+
+            this.$notify.success({
+              title: 'Create account successfully',
+              message: 'You got 100៛ and $100 in your account.'
+            })
           })
           .catch(err => {
             console.error(err)
@@ -153,12 +159,6 @@ export default {
             })
           })
           .finally(() => { 
-            this.$notify.success({
-              title: 'Create account successfully',
-              message: 'You have 100៛ and $100 in your account.',
-              offset: 100
-            })
-
             this.isLoading = false 
           })
         }

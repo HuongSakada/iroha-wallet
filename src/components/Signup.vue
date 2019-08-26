@@ -47,7 +47,7 @@
         </el-button>
       </el-form-item>
 
-      <p class="auth-container-info">Already have an account</p>
+      <div class="auth-container-info">Already have an account</div>
       <el-form-item class="login-button-container">
         <el-button
           class="fullwidth"
@@ -66,7 +66,7 @@
     :visible.sync="dialogVisible"
     width="450px"
     center>
-    <div >Download your private key and keep it secret!</div>
+    <div>Download your private key and keep it secret!</div>
     <div slot="footer">
       <el-button
         type="danger"
@@ -139,7 +139,7 @@ export default {
             .catch( err => { throw err })
           })
           .then(() => {
-            this.$store.dispatch('initialAssetQuantityForUser', {
+            this.$store.dispatch('addUserAssetQuantity', {
               accountId: `${this.userAccount.username}@${this.predefinedDomain}`
             })
             .catch( err => { throw err })

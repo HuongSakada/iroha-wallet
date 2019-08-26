@@ -4,9 +4,9 @@ import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
 import { cryptoHelper } from 'iroha-helpers'
-import { cache, newQueryServiceOptions, newCommandServiceOptions, newPreCommandServiceOptions } from '@/utils/util'
+import { cache, newQueryServiceOptions, newCommandServiceOptions, newPredefinedCommandServiceOptions } from '@/utils/util'
 import { transactionAssetForm } from '@/utils/transaction-format'
-import { preInitialAssetQuantityForUser } from '@/utils/functions'
+import { addAssetQuantity } from '@/utils/functions'
 
 const types = _([
   'SIGNUP',
@@ -184,7 +184,6 @@ const actions = {
   },
 
   getAllAccountAssetsTransactions ({ dispatch, state }) {
-
     let gettingAccountAssets
 
     if (_.isEmpty(state.assets)) {
@@ -260,13 +259,12 @@ const actions = {
   },
 
   createAccount ({ commit }, { accountName, domainId }) {
-
     let { publicKey, privateKey } = cryptoHelper.generateKeyPair()
 
     if(!_.isEmpty(accountName.trim())){
       return new Promise((resolve, reject) => {
         return commands.createAccount(
-          newPreCommandServiceOptions(),
+          newPredefinedCommandServiceOptions(),
           {
             accountName: accountName,
             domainId: domainId,
@@ -287,7 +285,7 @@ const actions = {
   setAccountDetails ({ state }, { accountId = state.accountId, accountInfo }) {
     const setAccountDetailArray = _.flatMap(accountInfo, function(value, key) {
       return commands.setAccountDetail(
-        newPreCommandServiceOptions(), 
+        newPredefinedCommandServiceOptions(), 
         {
           accountId: accountId,
           key: key,
@@ -302,13 +300,13 @@ const actions = {
     return Promise.all(setAccountDetailArray)
   },
 
-  initialAssetQuantityForUser ({ state }, { accountId }) {
-    preInitialAssetQuantityForUser({ 
+  addUserAssetQuantity ({ state }, { accountId }) {
+    addAssetQuantity({ 
       assetId: "riel#iroha", 
       accountId 
     })
 
-    preInitialAssetQuantityForUser({ 
+    addAssetQuantity({ 
       assetId: "usd#iroha", 
       accountId 
     })

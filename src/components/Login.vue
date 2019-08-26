@@ -55,7 +55,7 @@
         </el-button>
       </el-form-item>
 
-      <p class="auth-container-info">Don’t have an account?</p>
+      <div class="auth-container-info">Don’t have an account?</div>
       <el-form-item class="login-button-container">
         <el-button
           class="fullwidth"

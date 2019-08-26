@@ -84,14 +84,14 @@
                            "createAsset": {
                               "assetName": "riel",
                               "domainId": "iroha",
-                              "precision": 10
+                              "precision": 2
                            }
                         },
                         {
                            "createAsset": {
                               "assetName": "usd",
                               "domainId": "iroha",
-                              "precision": 10
+                              "precision": 2
                            }
                         }
                      ],

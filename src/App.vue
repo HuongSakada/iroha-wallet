@@ -30,7 +30,8 @@ export default {
 }
 .auth-container-info {
   margin-top: 3.5em;
-  font-size: 0.8em;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
   text-align: center;
 }
 </style>

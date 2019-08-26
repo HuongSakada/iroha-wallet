@@ -5,10 +5,10 @@
                 v-bind:style="{background: isRiel?'#e43e33':'#ff9800'}">
                 <el-row type="flex" justify="space-between">
                     <el-col :span="8" class="card-header">
-                        <div class="wallet-logo">{{ isRiel?'៛':'$'}}</div>
+                        <div class="wallet-logo">{{ currency }}</div>
                         <div class="wallet-title">{{ isRiel?'Riel account':'Dollar account'}}</div>
                     </el-col>
-                    <el-col :span="16" class="wallet-amount">{{wallet.amount}}៛</el-col>
+                    <el-col :span="16" class="wallet-amount">{{ amountLabel }}</el-col>
                 </el-row>
                 <el-card 
                     @click.native="transferFormVisible = true"
@@ -47,7 +47,7 @@
                     />
                 </el-form-item>
                 <span>
-                    Available balance: {{ isRiel?wallet.amount+'៛':'$'+wallet.amount }}
+                    Available balance: <strong>{{ amountLabel }}</strong>
                 </span>
                 <el-form-item label="Amount:" prop="amount">
                     <el-input 
@@ -103,6 +103,12 @@ export default {
         },
         isRiel () {
             return this.walletId === 'riel$iroha' ? true:false
+        },
+        currency () {
+            return this.isRiel ? '៛':'$'
+        },
+        amountLabel () {
+            return this.isRiel ? this.wallet.amount + '៛':'$' + this.wallet.amount
         },
         transactions () {
             return this.getTransactionByAssetId(this.wallet.assetId)

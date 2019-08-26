@@ -39,6 +39,11 @@ const router = new VueRouter({
               component: lazyComponent('Wallets/Wallet')
             }
           ]
+        },
+        {
+          path: 'setting',
+          name: 'setting',
+          component: lazyComponent('SettingPage')
         }
       ]
     },

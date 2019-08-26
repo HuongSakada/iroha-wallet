@@ -28,4 +28,10 @@ export default {
 .fullwidth {
   width: 100%;
 }
+.auth-container-info {
+  margin-top: 3.5em;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+  text-align: center;
+}
 </style>

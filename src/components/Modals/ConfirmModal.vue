@@ -1,6 +1,7 @@
 <template>
   <el-dialog
     title="Confirm the transaction"
+    :close-on-click-modal="false"
     :visible="confirmDialogVisible"
     width="450px"
     center

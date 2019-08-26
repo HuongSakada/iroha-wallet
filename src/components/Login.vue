@@ -51,14 +51,16 @@
           type="danger"
           @click="onSubmit"
           :loading="isLoading">
-          LOGIN
+          LOG IN
         </el-button>
       </el-form-item>
 
+      <div class="auth-container-info">Don’t have an account?</div>
       <el-form-item class="login-button-container">
         <el-button
           class="fullwidth"
           type="danger"
+          @click="$router.push('/signup')"
           plain>
           Register account
         </el-button>

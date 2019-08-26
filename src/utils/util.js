@@ -3,6 +3,8 @@ import {
   QueryService_v1Client as QueryService
 } from 'iroha-helpers/lib/proto/endpoint_pb_service'
 
+import { predefinedPrivateKey, predefinedAccountId } from '@/utils/functions'
+
 export const DEFAULT_TIMEOUT_LIMIT = 5000
 
 export const cache = {
@@ -20,6 +22,16 @@ export function newCommandServiceOptions (privateKeys, quorum) {
     privateKeys,
     quorum,
     creatorAccountId: cache.username,
+    commandService: newCommandService(),
+    timeoutLimit: DEFAULT_TIMEOUT_LIMIT
+  }
+}
+
+export function newPredefinedCommandServiceOptions () {
+  return {
+    privateKeys: predefinedPrivateKey(),
+    quorum: 1,
+    creatorAccountId: predefinedAccountId(),
     commandService: newCommandService(),
     timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }

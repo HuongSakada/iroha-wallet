@@ -15,6 +15,11 @@ const router = new VueRouter({
       component: lazyComponent('Login')
     },
     {
+      path: '/signup',
+      name: 'signup',
+      component: lazyComponent('Signup')
+    },
+    {
       path: '/',
       component: lazyComponent('Home'),
       children: [

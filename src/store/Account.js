@@ -3,8 +3,10 @@ import Vue from 'vue'
 import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
-import { cache, newQueryServiceOptions, newCommandServiceOptions} from '@/utils/util'
-import { transactionAssetForm } from '@utils/transaction-format'
+import { cryptoHelper } from 'iroha-helpers'
+import { cache, newQueryServiceOptions, newCommandServiceOptions, newPredefinedCommandServiceOptions } from '@/utils/util'
+import { transactionAssetForm } from '@/utils/transaction-format'
+import { addAssetQuantity } from '@/utils/functions'
 
 const types = _([
   'SIGNUP',
@@ -13,7 +15,8 @@ const types = _([
   'GET_ACCOUNT',
   'GET_ACCOUNT_ASSETS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
-  'TRANSFER_ASSET'
+  'TRANSFER_ASSET',
+  'ADD_ASSET_QUANTITY'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -75,11 +78,11 @@ const getters = {
   },
 
   rielAccount: (state, getters) => {
-    return getters.wallets.find(w => (w.id === 'golem$d3')) || {}
+    return getters.wallets.find(w => (w.id === 'riel$iroha')) || {}
   },
 
   usdAccount: (state, getters) => {
-    return getters.wallets.find(w => (w.id === 'augur$d3')) || {}
+    return getters.wallets.find(w => (w.id === 'usd$iroha')) || {}
   },
 
   accountQuorum (state) {
@@ -147,6 +150,12 @@ const mutations = {
   [types.TRANSFER_ASSET_SUCCESS] (state) {},
   [types.TRANSFER_ASSET_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.ADD_ASSET_QUANTITY_REQUEST] (state) {},
+  [types.ADD_ASSET_QUANTITY_SUCCESS] (state) {},
+  [types.ADD_ASSET_QUANTITY_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -175,7 +184,6 @@ const actions = {
   },
 
   getAllAccountAssetsTransactions ({ dispatch, state }) {
-
     let gettingAccountAssets
 
     if (_.isEmpty(state.assets)) {
@@ -233,7 +241,7 @@ const actions = {
       })
   },
 
-  transferAsset ({commit, state, getters}, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return commands.transferAsset(
@@ -248,6 +256,60 @@ const actions = {
       .catch(err => {
         commit(types.TRANSFER_ASSET_FAILURE, err)
       })
+  },
+
+  createAccount ({ commit }, { accountName, domainId }) {
+    let { publicKey, privateKey } = cryptoHelper.generateKeyPair()
+
+    if(!_.isEmpty(accountName.trim())){
+      return new Promise((resolve, reject) => {
+        return commands.createAccount(
+          newPredefinedCommandServiceOptions(),
+          {
+            accountName: accountName,
+            domainId: domainId,
+            publicKey: publicKey
+          }
+        )
+        .then(() => {
+          resolve(privateKey)
+        })
+        .catch(err => { reject(err) })
+      })
+      .catch(err => {
+        commit(types.SIGNUP_FAILURE, err)
+      })
+    }
+  },
+
+  setAccountDetails ({ state }, { accountId = state.accountId, accountInfo }) {
+    const setAccountDetailArray = _.flatMap(accountInfo, function(value, key) {
+      return commands.setAccountDetail(
+        newPredefinedCommandServiceOptions(), 
+        {
+          accountId: accountId,
+          key: key,
+          value: value
+        }
+      )
+      .catch(err => {
+        throw err
+      })
+    });
+
+    return Promise.all(setAccountDetailArray)
+  },
+
+  addUserAssetQuantity ({ state }, { accountId }) {
+    addAssetQuantity({ 
+      assetId: "riel#iroha", 
+      accountId 
+    })
+
+    addAssetQuantity({ 
+      assetId: "usd#iroha", 
+      accountId 
+    })
   }
 }
 

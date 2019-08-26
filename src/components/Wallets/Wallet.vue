@@ -29,6 +29,7 @@
 
         <el-dialog
             title="Transfer"
+            :close-on-click-modal="false"
             :visible.sync="transferFormVisible"
             @close="closeTransferForm"
             width="450px"
@@ -82,6 +83,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
+import _ from 'lodash'
 
 export default {
     name: 'Wallet',
@@ -100,7 +102,7 @@ export default {
             return this.wallets.find(w => (w.id === this.walletId)) || {}
         },
         isRiel () {
-            return this.walletId === 'golem$d3' ? true:false
+            return this.walletId === 'riel$iroha' ? true:false
         },
         transactions () {
             return this.getTransactionByAssetId(this.wallet.assetId)

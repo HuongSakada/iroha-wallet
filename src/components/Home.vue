@@ -17,11 +17,6 @@ export default {
     Menu: lazyComponent('Menu'),
     ConfirmModal: lazyComponent('Modals/ConfirmModal')
   },
-  data() {
-    return {
-      
-    }
-  },
   methods: {
 
   }

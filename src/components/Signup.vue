@@ -7,11 +7,11 @@
 
     <div class="title">Let's get started</div>
 
-    <el-form 
-      class="login-form" 
-      ref="form" 
-      :rules="rules" 
-      :model="form" 
+    <el-form
+      class="login-form"
+      ref="form"
+      :rules="rules"
+      :model="form"
       label-position="top">
 
       <el-form-item label="First name:" prop="firstname">

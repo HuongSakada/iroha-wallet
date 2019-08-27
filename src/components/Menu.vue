@@ -71,11 +71,6 @@ export default {
       return this.$route.path
     }
   },
-  data() {
-    return {
-      
-    }
-  },
   methods: {
     ...mapActions([
       'logout'

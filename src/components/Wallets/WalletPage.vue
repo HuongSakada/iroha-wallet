@@ -5,7 +5,7 @@
       <wallet-item :wallet="usdAccount" :isRiel="false"/>
     </el-col>
     <el-col :span="20">
-        <router-view />
+      <router-view />
     </el-col>
   </el-row>
 </template>
@@ -39,21 +39,21 @@ export default {
   created () {
     this.getAccountAssets()
   },
-  methods: { 
+  methods: {
     ...mapActions([
       'getAccountAssets'
     ]),
     openDefaultWallet () {
       let walletId = this.$route.params.walletId
 
-      if (walletId == 'undefined' || walletId == null) {
+      if (walletId === 'undefined' || walletId == null) {
         walletId = this.wallets[0].id
       }
 
       if (this.wallets.length) {
-        this.$router.push({ 
-          name: 'wallet', 
-          params: { walletId: walletId } 
+        this.$router.push({
+          name: 'wallet',
+          params: { walletId: walletId }
         })
       }
     }

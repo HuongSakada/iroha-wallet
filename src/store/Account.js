@@ -7,7 +7,6 @@ import { cryptoHelper } from 'iroha-helpers'
 import { cache, newQueryServiceOptions, newCommandServiceOptions, newPredefinedCommandServiceOptions } from '@/utils/util'
 import { transactionAssetForm } from '@/utils/transaction-format'
 import { addAssetQuantity } from '@/utils/functions'
-import { async } from 'q';
 
 const types = _([
   'SIGNUP',
@@ -21,7 +20,8 @@ const types = _([
   'GET_SIGNATORY',
   'ADD_SIGNATORY',
   'UPDATE_ACCOUNT',
-  'REMOVE_SIGNATORY'
+  'REMOVE_SIGNATORY',
+  'SET_ACCOUNT_QUORUM'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -79,7 +79,11 @@ const getters = {
       }
     })
 
-    return assets
+    return _(assets)
+      .chain()
+      .sortBy('assetId')
+      .reverse()
+      .value()
   },
 
   rielAccount: (state, getters) => {
@@ -195,7 +199,13 @@ const mutations = {
   },
   [types.UPDATE_ACCOUNT_FAILURE] (state, err) {
     handleError(state, err)
-  }
+  },
+
+  [types.SET_ACCOUNT_QUORUM_REQUEST] (state) {},
+  [types.SET_ACCOUNT_QUORUM_SUCCESS] (state) {},
+  [types.SET_ACCOUNT_QUORUM_FAILURE] (state, err) {
+    handleError(state, err)
+  },
 }
 
 const actions = {
@@ -426,6 +436,24 @@ const actions = {
         commit(types.UPDATE_ACCOUNT_FAILURE, err)
       })
   },
+
+  setAccountQuorum ({ state, getters, dispatch, commit }, { quorum, privateKeys }) {
+    commit(types.SET_ACCOUNT_QUORUM_REQUEST)
+
+    return commands.setAccountQuorum(
+      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+      {
+      accountId: state.accountId,
+      quorum
+    })
+    .then(async() => {
+      commit(types.SET_ACCOUNT_QUORUM_SUCCESS)
+      await dispatch('updateAccount')
+    })
+    .catch((err) => { 
+      commit(types.SET_ACCOUNT_QUORUM_FAILURE, err)
+    })
+  }
 }
 
 export default {

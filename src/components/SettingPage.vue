@@ -9,7 +9,25 @@
           >Account Quorum is {{ accountQuorum }}</el-card>
         </el-col>
         <el-col :span="12" class="full-height">
-          <el-card :body-style="{ padding: '0' }">
+          <el-card
+            class="setting-card"
+            :body-style="{ padding: '0' }">
+            <div class="card-header">
+              <div class="card-header-title">
+                <span style="line-height: 2">
+                  Account quorum <strong>{{ accountQuorum }}/{{ accountSignatories.length }}</strong>
+                </span>
+                <el-button
+                  @click="accountQuorumVisible = true; quorum = accountQuorum"
+                  plain size="small" icon="el-icon-edit">
+                  Edit
+                </el-button>
+              </div>
+            </div>
+          </el-card>
+          <el-card
+            class="setting-card"
+            :body-style="{ padding: '0' }">
             <div class="card-header">
               <div class="card-header-title">
                 <span style="line-height: 2">Public keys</span>
@@ -90,6 +108,39 @@
         >Download</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog
+      title="Account quorum"
+      :visible.sync="accountQuorumVisible"
+      width="450px"
+      center>
+      <div style="text-align: center; font-size: 1rem">
+          <el-input-number
+            v-model="quorum"
+            :min="1"
+            :max="accountSignatories.length"
+            class="fullwidth">
+          </el-input-number>
+      </div>
+      <div slot="footer">
+        <el-row  class="card-footer">
+          <el-button
+            :span="12"
+            :loading="addingQuorum"
+            class="fullwidth"
+            type="danger"
+            @click="addQuorum">
+            Update
+          </el-button>
+          <el-button
+            :span="12"
+            class="fullwidth"
+            @click="accountQuorumVisible = false">
+            Cancel
+          </el-button>
+        </el-row>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -105,12 +156,15 @@ export default {
       addingKey: false,
       dialogVisible: false,
       removeKeyFormVisible: false,
+      accountQuorumVisible: false,
       removingKey: false,
+      addingQuorum: false,
       signatoryToRemove: null,
       userAccount: {
         accountId: '',
         privateKey: ''
-      }
+      },
+      quorum: 0
     }
   },
   created () {
@@ -180,6 +234,34 @@ export default {
           })
       })
     },
+    addQuorum () {
+      if (this.quorum === this.accountQuorum) return
+
+      this.openConfirmDialog().then(privateKeys => {
+        if (!privateKeys) return
+        this.addingQuorum = true
+
+        this.$store.dispatch('setAccountQuorum', {
+          privateKeys: privateKeys,
+          quorum: this.quorum
+        })
+          .then(() => {
+            this.$message({
+              message: 'Set account quorum successful!',
+              type: 'success'
+            })
+          })
+          .catch(err => {
+            this.$alert(err.message, 'Set account quorum error', {
+              type: 'error'
+            })
+          })
+          .finally(() => {
+            this.addingQuorum = false
+            this.accountQuorumVisible = false
+          })
+      })
+    },
     onDownloadPrivateKey () {
       const filename = `${this.userAccount.accountId}.priv`
       const blob = new Blob([this.userAccount.privateKey], {
@@ -220,5 +302,8 @@ export default {
 .card-footer {
   display: flex;
   justify-content: space-between;
+}
+.setting-card {
+  margin-bottom: 1rem;
 }
 </style>

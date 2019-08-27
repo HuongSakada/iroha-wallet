@@ -26,7 +26,7 @@ export default {
   width: 25rem;
 }
 .fullwidth {
-  width: 100%;
+  width: 100% !important;
 }
 .auth-container-info {
   margin-top: 3.5em;

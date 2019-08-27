@@ -13,6 +13,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
+import { isUndefined } from 'lodash'
 
 export default {
   name: 'WalletPage',
@@ -46,8 +47,8 @@ export default {
     openDefaultWallet () {
       let walletId = this.$route.params.walletId
 
-      if (walletId === 'undefined' || walletId == null) {
-        walletId = this.wallets[0].id
+      if (isUndefined(walletId) || walletId == null) {
+        walletId = this.wallets[1].id
       }
 
       if (this.wallets.length) {

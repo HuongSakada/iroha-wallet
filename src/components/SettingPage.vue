@@ -24,7 +24,9 @@
                         <div v-for="signatory in accountSignatories" :key="signatory" class="card-header-item">
                             <div class="item">
                                 <span class="item-text">{{ signatory }}</span>
-                                <el-button type="text">
+                                <el-button type="text"
+                                    v-show="accountSignatories.length > 1"
+                                    @click="removeKeyFormVisible = true; signatoryToRemove = signatory">
                                     <i class="el-icon-delete" />
                                 </el-button>
                             </div>
@@ -63,6 +65,34 @@
         </el-dialog>
 
         <el-dialog
+            title="Public key"
+            :visible.sync="removeKeyFormVisible"
+            width="450px"
+            center>
+            <div style="text-align: center; font-size: 1rem">
+                Are you sure to remove this public key <strong>{{ signatoryToRemove }}</strong>?
+            </div>
+            <div slot="footer">
+                <el-row  class="card-footer">
+                    <el-button
+                        :span="12"
+                        :loading="removingKey"
+                        class="fullwidth"
+                        type="danger"
+                        @click="removePublicKey">
+                        Remove
+                    </el-button>
+                    <el-button 
+                        :span="12" 
+                        class="fullwidth"  
+                        @click="removeKeyFormVisible = false">
+                        Cancel
+                    </el-button>
+                </el-row>
+            </div>
+        </el-dialog>
+
+        <el-dialog
             title="Your private key"
             :close-on-click-modal="false"
             :visible.sync="dialogVisible"
@@ -93,6 +123,9 @@ export default {
             publicKeyVisible: false,
             addingKey: false,
             dialogVisible: false,
+            removeKeyFormVisible: false,
+            removingKey: false,
+            signatoryToRemove: null,
             userAccount: {
                 accountId: '',
                 privateKey: ''
@@ -140,6 +173,34 @@ export default {
                 })
                 .finally(() => { 
                     this.addingKey = false
+                    this.getSignatories()
+                })
+            })
+        },
+        removePublicKey () {
+            this.openConfirmDialog()
+            .then(privateKeys => {
+                if (!privateKeys) return
+                this.removingKey = true
+
+                this.$store.dispatch('removeSignatory', {
+                    privateKeys: privateKeys,
+                    publicKey: this.signatoryToRemove
+                })
+                .then(() => {
+                    this.$message({
+                        message: 'Remove public key successful!',
+                        type: 'success'
+                    })
+                })
+                .catch(err => {
+                    this.$alert(err.message, 'Remove public key error', {
+                        type: 'error'
+                    })
+                })
+                .finally(() => { 
+                    this.removingKey = false
+                    this.removeKeyFormVisible = false
                     this.getSignatories()
                 })
             })

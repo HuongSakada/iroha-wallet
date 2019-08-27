@@ -20,7 +20,8 @@ const types = _([
   'ADD_ASSET_QUANTITY',
   'GET_SIGNATORY',
   'ADD_SIGNATORY',
-  'UPDATE_ACCOUNT'
+  'UPDATE_ACCOUNT',
+  'REMOVE_SIGNATORY'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -177,6 +178,12 @@ const mutations = {
   [types.ADD_SIGNATORY_REQUEST] (state) {},
   [types.ADD_SIGNATORY_SUCCESS] (state) {},
   [types.ADD_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.REMOVE_SIGNATORY_REQUEST] (state) {},
+  [types.REMOVE_SIGNATORY_SUCCESS] (state) {},
+  [types.REMOVE_SIGNATORY_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -360,7 +367,7 @@ const actions = {
       })
   },
 
-  addSignatory ({ getters, state, commit, dispatch}, { privateKeys }) {
+  addSignatory ({ getters, state, commit, dispatch }, { privateKeys }) {
     commit(types.ADD_SIGNATORY_REQUEST)
     const { publicKey, privateKey } = cryptoHelper.generateKeyPair()
 
@@ -388,6 +395,22 @@ const actions = {
     })
   },
 
+  removeSignatory ({ state, getters, dispatch, commit }, { publicKey, privateKeys }) {
+    return commands.removeSignatory(
+      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+      {
+      accountId: state.accountId,
+      publicKey: publicKey
+    })
+    .then(async() => {
+      commit(types.REMOVE_SIGNATORY_SUCCESS)
+      await dispatch('updateAccount')
+    })
+    .catch((err) => { 
+      commit(types.REMOVE_SIGNATORY_FAILURE, err)
+    })
+  },
+
   updateAccount ({ commit, state }) {
     commit(types.UPDATE_ACCOUNT_REQUEST)
 
@@ -402,7 +425,7 @@ const actions = {
       .catch(err => {
         commit(types.UPDATE_ACCOUNT_FAILURE, err)
       })
-  }
+  },
 }
 
 export default {

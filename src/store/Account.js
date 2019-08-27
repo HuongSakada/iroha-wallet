@@ -371,9 +371,9 @@ const actions = {
         accountId: state.accountId,
         publicKey: publicKey
       })
-      .then(async() => {
+      .then(() => {
         commit(types.ADD_SIGNATORY_SUCCESS)
-        await dispatch('updateAccount')
+        dispatch('updateAccount')
       })
       .then(() => {
         resolve({ 

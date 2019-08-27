@@ -140,6 +140,7 @@ export default {
                 })
                 .finally(() => { 
                     this.addingKey = false
+                    this.getSignatories()
                 })
             })
         },

@@ -3,27 +3,20 @@
     <el-main>
       <el-row :gutter="17" style="margin-bottom: 1.25rem">
         <el-col :span="12">
-          <router-link
-            :to="'/wallets/' + rielAccount.id">
-            <wallet-card 
-              title="Riel account"
-              :amount="rielAccount.amount"/>
+          <router-link :to="'/wallets/' + rielAccount.id">
+            <wallet-card title="Riel account" :amount="rielAccount.amount" />
           </router-link>
         </el-col>
-        <el-col :span="12" >
-          <router-link
-            :to="'/wallets/' + usdAccount.id">
-          <wallet-card 
-            :isRiel="false"
-            title="Dollar account"
-            :amount="usdAccount.amount"/>
+        <el-col :span="12">
+          <router-link :to="'/wallets/' + usdAccount.id">
+            <wallet-card :isRiel="false" title="Dollar account" :amount="usdAccount.amount" />
           </router-link>
         </el-col>
       </el-row>
 
       <el-row>
         <el-card>
-          <Transaction :transactions="accountTransactions"/>
+          <Transaction :transactions="accountTransactions" />
         </el-card>
       </el-row>
     </el-main>
@@ -52,13 +45,10 @@ export default {
     this.getAllAccountAssetsTransactions()
   },
   methods: {
-    ...mapActions([
-      'getAllAccountAssetsTransactions'
-    ])
+    ...mapActions(['getAllAccountAssetsTransactions'])
   }
 }
 </script>
 
 <style scoped>
-
 </style>

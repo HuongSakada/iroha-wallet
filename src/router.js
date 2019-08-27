@@ -39,6 +39,11 @@ const router = new VueRouter({
               component: lazyComponent('Wallets/Wallet')
             }
           ]
+        },
+        {
+          path: 'setting',
+          name: 'setting',
+          component: lazyComponent('SettingPage')
         }
       ]
     },
@@ -59,4 +64,4 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-export default router;
+export default router

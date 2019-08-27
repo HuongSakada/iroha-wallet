@@ -34,6 +34,17 @@
         </template>
       </el-menu-item>
 
+      <el-menu-item index="/setting">
+        <template slot="title">
+          <el-row>
+            <el-col :span="5">
+              <i class="el-icon-setting"></i>
+            </el-col>
+            <span>Setting</span>
+          </el-row>
+        </template>
+      </el-menu-item>
+
        <el-menu-item index="/logout"
         @click="onLogout">
         <template slot="title">
@@ -58,11 +69,6 @@ export default {
     currentActiveMenu () {
       if (this.$route.path.includes('wallets')) return '/wallets'
       return this.$route.path
-    }
-  },
-  data() {
-    return {
-      
     }
   },
   methods: {

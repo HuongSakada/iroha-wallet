@@ -2,7 +2,6 @@ import {
   CommandService_v1Client as CommandService,
   QueryService_v1Client as QueryService
 } from 'iroha-helpers/lib/proto/endpoint_pb_service'
-
 import { predefinedPrivateKey, predefinedAccountId } from '@/utils/functions'
 
 export const DEFAULT_TIMEOUT_LIMIT = 5000

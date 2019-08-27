@@ -5,7 +5,7 @@ import store from './store'
 
 import '../theme/index.css'
 
-import ElementUI from 'element-ui';
+import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 
 Vue.config.productionTip = false
@@ -15,5 +15,5 @@ Vue.use(ElementUI, { locale })
 new Vue({
   router,
   store,
-  render: h => h(App),
+  render: h => h(App)
 }).$mount('#app')

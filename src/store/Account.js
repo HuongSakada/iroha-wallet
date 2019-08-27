@@ -7,6 +7,7 @@ import { cryptoHelper } from 'iroha-helpers'
 import { cache, newQueryServiceOptions, newCommandServiceOptions, newPredefinedCommandServiceOptions } from '@/utils/util'
 import { transactionAssetForm } from '@/utils/transaction-format'
 import { addAssetQuantity } from '@/utils/functions'
+import { async } from 'q';
 
 const types = _([
   'SIGNUP',
@@ -16,7 +17,11 @@ const types = _([
   'GET_ACCOUNT_ASSETS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'TRANSFER_ASSET',
-  'ADD_ASSET_QUANTITY'
+  'ADD_ASSET_QUANTITY',
+  'GET_SIGNATORY',
+  'ADD_SIGNATORY',
+  'UPDATE_ACCOUNT',
+  'REMOVE_SIGNATORY'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -87,6 +92,10 @@ const getters = {
 
   accountQuorum (state) {
     return state.accountQuorum
+  },
+
+  accountSignatories (state) {
+    return state.accountSignatories
   }
 }
 
@@ -155,6 +164,36 @@ const mutations = {
   [types.ADD_ASSET_QUANTITY_REQUEST] (state) {},
   [types.ADD_ASSET_QUANTITY_SUCCESS] (state) {},
   [types.ADD_ASSET_QUANTITY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_SIGNATORY_REQUEST] (state) {},
+  [types.GET_SIGNATORY_SUCCESS] (state, signatories) {
+    state.accountSignatories = signatories
+  },
+  [types.GET_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.ADD_SIGNATORY_REQUEST] (state) {},
+  [types.ADD_SIGNATORY_SUCCESS] (state) {},
+  [types.ADD_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.REMOVE_SIGNATORY_REQUEST] (state) {},
+  [types.REMOVE_SIGNATORY_SUCCESS] (state) {},
+  [types.REMOVE_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.UPDATE_ACCOUNT_REQUEST] (state) {},
+  [types.UPDATE_ACCOUNT_SUCCESS] (state, account) {
+    state.accountId = account.accountId
+    state.accountInfo = JSON.parse(account.jsonData)
+    state.accountQuorum = account.quorum
+  },
+  [types.UPDATE_ACCOUNT_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -310,7 +349,83 @@ const actions = {
       assetId: "usd#iroha", 
       accountId 
     })
-  }
+  },
+
+  getSignatories ({ commit, state }) {
+    commit(types.GET_SIGNATORY_REQUEST)
+
+    return queries.getSignatories(
+      newQueryServiceOptions(),
+      {
+        accountId: state.accountId
+      })
+      .then(signatories => {
+        commit(types.GET_SIGNATORY_SUCCESS, signatories)
+      })
+      .catch(err => {
+        commit(types.GET_SIGNATORY_FAILURE, err)
+      })
+  },
+
+  addSignatory ({ getters, state, commit, dispatch }, { privateKeys }) {
+    commit(types.ADD_SIGNATORY_REQUEST)
+    const { publicKey, privateKey } = cryptoHelper.generateKeyPair()
+
+    return new Promise((resolve, reject) => {
+      return commands.addSignatory(
+        newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+        {
+        accountId: state.accountId,
+        publicKey: publicKey
+      })
+      .then(() => {
+        commit(types.ADD_SIGNATORY_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .then(() => {
+        resolve({ 
+          privateKey: privateKey, 
+          accountId: state.accountId
+        })
+      })
+      .catch(err => { reject(err) })
+    })
+    .catch(err => {
+      commit(types.ADD_SIGNATORY_FAILURE, err)
+    })
+  },
+
+  removeSignatory ({ state, getters, dispatch, commit }, { publicKey, privateKeys }) {
+    return commands.removeSignatory(
+      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+      {
+      accountId: state.accountId,
+      publicKey: publicKey
+    })
+    .then(async() => {
+      commit(types.REMOVE_SIGNATORY_SUCCESS)
+      await dispatch('updateAccount')
+    })
+    .catch((err) => { 
+      commit(types.REMOVE_SIGNATORY_FAILURE, err)
+    })
+  },
+
+  updateAccount ({ commit, state }) {
+    commit(types.UPDATE_ACCOUNT_REQUEST)
+
+    return queries.getAccount(
+      newQueryServiceOptions(),
+      {
+      accountId: state.accountId
+    })
+    .then((account) => {
+        commit(types.UPDATE_ACCOUNT_SUCCESS, account)
+      })
+      .catch(err => {
+        commit(types.UPDATE_ACCOUNT_FAILURE, err)
+      })
+  },
 }
 
 export default {

@@ -2,7 +2,7 @@
 
 ## Project setup
 ```
-npm install
+yarn install
 ```
 ### Run iroha
 ``` 
@@ -11,5 +11,5 @@ docker-compose -f docker/docker-compose.yaml up
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+yarn serve
 ```

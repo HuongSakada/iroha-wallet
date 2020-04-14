@@ -1,0 +1,6 @@
+projectKey=iorha-wallet
+serverUrl=http://0.0.0.0:9000
+serverVersion=7.9.1.27448
+dashboardUrl=http://0.0.0.0:9000/dashboard?id=iorha-wallet
+ceTaskId=AW0khG8l_cg9c60B5qJb
+ceTaskUrl=http://0.0.0.0:9000/api/ce/task?id=AW0khG8l_cg9c60B5qJb

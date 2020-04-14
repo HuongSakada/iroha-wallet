@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 import Vue from 'vue'
 import _ from 'lodash'
 import commands from 'iroha-helpers/lib/commands'
@@ -144,8 +144,8 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_ASSETS_REQUEST] (state) {},
-  [types.GET_ACCOUNT_ASSETS_SUCCESS] (state, assets) { 
-    state.assets = assets 
+  [types.GET_ACCOUNT_ASSETS_SUCCESS] (state, assets) {
+    state.assets = assets
   },
   [types.GET_ACCOUNT_ASSETS_FAILURE] (state, err) {
     handleError(state, err)
@@ -205,7 +205,7 @@ const mutations = {
   [types.SET_ACCOUNT_QUORUM_SUCCESS] (state) {},
   [types.SET_ACCOUNT_QUORUM_FAILURE] (state, err) {
     handleError(state, err)
-  },
+  }
 }
 
 const actions = {
@@ -214,18 +214,18 @@ const actions = {
 
     cache.key = privateKey
     cache.username = username
-    
+
     return queries.getAccount(
       newQueryServiceOptions(),
       {
-      accountId: cache.username
-    })
-    .then((account) => {
-      commit(types.LOGIN_SUCCESS, account)
-    })
-    .catch(err => {
-      commit(types.LOGIN_FAILURE, err)
-    })
+        accountId: cache.username
+      })
+      .then((account) => {
+        commit(types.LOGIN_SUCCESS, account)
+      })
+      .catch(err => {
+        commit(types.LOGIN_FAILURE, err)
+      })
   },
 
   logout ({ commit }) {
@@ -265,7 +265,7 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_ACCOUNT_ASSETS_FAILURE, err)
-    })
+      })
   },
 
   getAccountAssetTransactions ({ commit, state }, { assetId }) {
@@ -294,7 +294,7 @@ const actions = {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return commands.transferAsset(
-      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+      newCommandServiceOptions(privateKeys, getters.accountQuorum),
       {
         srcAccountId: state.accountId,
         destAccountId: to,
@@ -310,7 +310,7 @@ const actions = {
   createAccount ({ commit }, { accountName, domainId }) {
     let { publicKey, privateKey } = cryptoHelper.generateKeyPair()
 
-    if(!_.isEmpty(accountName.trim())){
+    if (!_.isEmpty(accountName.trim())) {
       return new Promise((resolve, reject) => {
         return commands.createAccount(
           newPredefinedCommandServiceOptions(),
@@ -320,44 +320,44 @@ const actions = {
             publicKey: publicKey
           }
         )
-        .then(() => {
-          resolve(privateKey)
+          .then(() => {
+            resolve(privateKey)
+          })
+          .catch(err => { reject(err) })
+      })
+        .catch(err => {
+          commit(types.SIGNUP_FAILURE, err)
         })
-        .catch(err => { reject(err) })
-      })
-      .catch(err => {
-        commit(types.SIGNUP_FAILURE, err)
-      })
     }
   },
 
   setAccountDetails ({ state }, { accountId = state.accountId, accountInfo }) {
-    const setAccountDetailArray = _.flatMap(accountInfo, function(value, key) {
+    const setAccountDetailArray = _.flatMap(accountInfo, function (value, key) {
       return commands.setAccountDetail(
-        newPredefinedCommandServiceOptions(), 
+        newPredefinedCommandServiceOptions(),
         {
           accountId: accountId,
           key: key,
           value: value
         }
       )
-      .catch(err => {
-        throw err
-      })
-    });
+        .catch(err => {
+          throw err
+        })
+    })
 
     return Promise.all(setAccountDetailArray)
   },
 
   addUserAssetQuantity ({ state }, { accountId }) {
-    addAssetQuantity({ 
-      assetId: "riel#iroha", 
-      accountId 
+    addAssetQuantity({
+      assetId: 'riel#iroha',
+      accountId
     })
 
-    addAssetQuantity({ 
-      assetId: "usd#iroha", 
-      accountId 
+    addAssetQuantity({
+      assetId: 'usd#iroha',
+      accountId
     })
   },
 
@@ -383,42 +383,42 @@ const actions = {
 
     return new Promise((resolve, reject) => {
       return commands.addSignatory(
-        newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+        newCommandServiceOptions(privateKeys, getters.accountQuorum),
         {
-        accountId: state.accountId,
-        publicKey: publicKey
-      })
-      .then(() => {
-        commit(types.ADD_SIGNATORY_SUCCESS)
-        dispatch('updateAccount')
-      })
-      .then(() => {
-        resolve({ 
-          privateKey: privateKey, 
-          accountId: state.accountId
+          accountId: state.accountId,
+          publicKey: publicKey
         })
+        .then(() => {
+          commit(types.ADD_SIGNATORY_SUCCESS)
+          dispatch('updateAccount')
+        })
+        .then(() => {
+          resolve({
+            privateKey: privateKey,
+            accountId: state.accountId
+          })
+        })
+        .catch(err => { reject(err) })
+    })
+      .catch(err => {
+        commit(types.ADD_SIGNATORY_FAILURE, err)
       })
-      .catch(err => { reject(err) })
-    })
-    .catch(err => {
-      commit(types.ADD_SIGNATORY_FAILURE, err)
-    })
   },
 
   removeSignatory ({ state, getters, dispatch, commit }, { publicKey, privateKeys }) {
     return commands.removeSignatory(
-      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+      newCommandServiceOptions(privateKeys, getters.accountQuorum),
       {
-      accountId: state.accountId,
-      publicKey: publicKey
-    })
-    .then(async() => {
-      commit(types.REMOVE_SIGNATORY_SUCCESS)
-      await dispatch('updateAccount')
-    })
-    .catch((err) => { 
-      commit(types.REMOVE_SIGNATORY_FAILURE, err)
-    })
+        accountId: state.accountId,
+        publicKey: publicKey
+      })
+      .then(async () => {
+        commit(types.REMOVE_SIGNATORY_SUCCESS)
+        await dispatch('updateAccount')
+      })
+      .catch((err) => {
+        commit(types.REMOVE_SIGNATORY_FAILURE, err)
+      })
   },
 
   updateAccount ({ commit, state }) {
@@ -427,9 +427,9 @@ const actions = {
     return queries.getAccount(
       newQueryServiceOptions(),
       {
-      accountId: state.accountId
-    })
-    .then((account) => {
+        accountId: state.accountId
+      })
+      .then((account) => {
         commit(types.UPDATE_ACCOUNT_SUCCESS, account)
       })
       .catch(err => {
@@ -441,18 +441,18 @@ const actions = {
     commit(types.SET_ACCOUNT_QUORUM_REQUEST)
 
     return commands.setAccountQuorum(
-      newCommandServiceOptions(privateKeys, getters.accountQuorum), 
+      newCommandServiceOptions(privateKeys, getters.accountQuorum),
       {
-      accountId: state.accountId,
-      quorum
-    })
-    .then(async() => {
-      commit(types.SET_ACCOUNT_QUORUM_SUCCESS)
-      await dispatch('updateAccount')
-    })
-    .catch((err) => { 
-      commit(types.SET_ACCOUNT_QUORUM_FAILURE, err)
-    })
+        accountId: state.accountId,
+        quorum
+      })
+      .then(async () => {
+        commit(types.SET_ACCOUNT_QUORUM_SUCCESS)
+        await dispatch('updateAccount')
+      })
+      .catch((err) => {
+        commit(types.SET_ACCOUNT_QUORUM_FAILURE, err)
+      })
   }
 }
 
